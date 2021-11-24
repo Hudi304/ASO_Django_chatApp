@@ -1,0 +1,142 @@
+ROOM SCRIPT 
+Post messages
+ {#
+  <!-- <script type="text/javascript">
+    $(document).on("submit", "#post-form", function (e) {
+      e.preventDefault();
+
+      $.ajax({
+        type: "POST",
+        url: "/send",
+        data: {
+          username: $("#username").val(),
+          room_id: $("#room_id").val(),
+          message: $("#message").val(),
+          csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+        },
+        success: function (data) {
+          alert(data);
+        },
+      });
+      document.getElementById("message").value = "";
+    });
+  </script> -->
+  #}
+
+
+Get messages
+
+    <script>
+      $(document).ready(function () {
+        setInterval(function () {
+          $.ajax({
+            type: "GET",
+            url: "/getMessages/{{room}}/",
+            success: function (response) {
+              console.log(response);
+              $("#display").empty();
+              for (var key in response.messages) {
+                var temp =
+                  "<div class='container darker'><b>" +
+                  response.messages[key].user +
+                  "</b><p>" +
+                  response.messages[key].value +
+                  "</p><span class='time-left'>" +
+                  response.messages[key].date +
+                  "</span></div>";
+                $("#display").append(temp);
+              }
+            },
+            error: function (response) {
+              //  alert('An error occurred')
+            },
+          });
+        }, 1000);
+      });
+    </script>
+
+
+
+
+    ///
+
+
+
+    
+# @login_required(login_url='login')
+# def home(request):
+#     if request.method == 'POST':
+#         roomName = request.POST['room_name']
+#         username = request.POST['username']
+
+#         logging.error('roomname : ', roomName, ' username : ', username)
+
+#         if ChatRoom.objects.filter(name=roomName).exists():
+#             return redirect('/' + roomName + '/?username=' + username)
+#         else:
+#             newRoom = ChatRoom.objects.create(name=roomName)
+#             newRoom.save()
+#             return redirect('/' + roomName + '/?username=' + username)
+
+#     context = {}
+#     return render(request, 'home.html', context)
+
+
+# def room(request, room):
+#     if request.method == 'GET':
+#         logging.error('GET  ')
+
+#         username = request.GET.get('username')
+#         # room_details = ChatRoom.objects.get(name=room)
+#         return render(request, 'room.html', {
+#             'username': username,
+#             'room': room,
+#             # 'room_details': room_details,
+#         })
+#     if request.method == 'PUT':
+#         # username = request.PUT.get('username')
+#         logging.error('PUT  ')
+
+#         return render(request, 'room.html', {
+#             'username': username,
+#             'room': room,
+#             # 'room_details': room_details,
+#         })
+
+
+# def send(request):
+#     message = request.POST['message']
+#     username = request.POST['username']
+#     room_id = request.POST['room_id']
+
+#     new_message = Message.objects.create(
+#         value=message, user=username, room=room_id
+#     )
+
+#     new_message.save()
+
+#     # return HttpResponse('Hi message snet successfully!!')
+
+
+# def getMessages(request, room):
+#     room_details = ChatRoom.objects.get(name=room)
+#     logger.info('Something went wrong!')
+
+#     messages = Message.objects.filter(room=room_details.id)
+#     return JsonResponse({
+#         'messages': list(messages.values())
+#     })
+
+
+# def checkview(request):
+#     roomName = request.POST['room_name']
+#     username = request.POST['username']
+
+# # if room name exists redirect to it
+#     if ChatRoom.objects.filter(name=roomName).exists():
+#         return redirect('/' + roomName + '/?username=' + username)
+# #  esle create room and redirect to it
+#     else:
+#         newRoom = ChatRoom.objects.create(name=roomName)
+#         newRoom.save()
+#         return redirect('/' + roomName + '/?username=' + username)

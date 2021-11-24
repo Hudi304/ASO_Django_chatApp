@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -158,8 +158,37 @@
     </h2>
 
     <div id="display">
-      <div class="container darker"></div>
+      <div class="container darker">
+      </div>
     </div>
+
+    <script>
+      $(document).ready(function () {
+        setInterval(function () {
+          $.ajax({
+            type: "GET",
+            url: "/getMessages/{{room}}/",
+            success: function (response) {
+              $("#display").empty();
+              for (var key in response.messages) {
+                var temp =
+                  "<div class='container darker'><b>" +
+                  response.messages[key].user +
+                  "</b><p>" +
+                  response.messages[key].value +
+                  "</p><span class='time-left'>" +
+                  response.messages[key].date +
+                  "</span></div>";
+                $("#display").append(temp);
+              }
+            },
+            error: function (response) {
+              // alert('An error occurred')
+            },
+          });
+        }, 1000);
+      });
+    </script>
 
     <div class="container">
       <style>
@@ -236,13 +265,16 @@
             name="message"
             id="message"
             style="margin-top: 10px"
+            onChange={  
+            chatSocket.send(JSON.stringify({
+                'typing': $("#username").val()
+            }));}
           ></textarea>
+          <div class='isTyping'></div>
           <input type="submit" value="Send" />
         </form>
       </div>
     </div>
-    <h5>&copy; Copyright Reserved Desphixs - 2021</h5>
-    <h6>Made by Destiny Franks &hearts;</h6>
 
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
@@ -261,8 +293,8 @@
       e.preventDefault();
 
       $.ajax({
-        type: "PUT",
-        url: "room/",
+        type: "POST",
+        url: "/send",
         data: {
           username: $("#username").val(),
           room_id: $("#room_id").val(),
@@ -270,10 +302,26 @@
           csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
         },
         success: function (data) {
-          alert(data);
+          // alert(data)
         },
       });
       document.getElementById("message").value = "";
     });
+
+    {% comment %} const roomName = $("#username").val();
+    console.log("roomName : ", roomName);
+    const chatSocket = new WebSocket(
+      "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
+    );
+
+    chatSocket.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      console.log("onMessage : ", e.data);
+      document.querySelector("#chat-log").value += data.message + "\n";
+    };
+
+    chatSocket.onclose = function (e) {
+      console.error("Chat socket closed unexpectedly");
+    }; {% endcomment %}
   </script>
 </html>

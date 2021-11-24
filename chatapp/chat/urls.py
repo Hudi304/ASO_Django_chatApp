@@ -1,3 +1,4 @@
+from django.conf.urls import include
 from django.urls import path
 from . import views
 
@@ -15,9 +16,12 @@ urlpatterns = [
     path('logout/', views.logoutUser, name='logout'),
     path('home/', views.home, name='home'),
 
-    path('<str:room>/', views.room, name='room'),
+    path('', views.index, name='index'),
+    # path('chat/', include('chatTemp.urls')),
+    # path('', views.home, name="home"),
     
-    path('checkview', views.checkview, name='checkview'),
-    path('send', views.send, name='send'),
-    path('getMessages<str:room>/', views.getMessages, name='getMessages')
+    path('<str:room>/', views.room, name="room"),
+    path('home/checkview', views.checkview, name="checkview"),
+    path('send', views.send, name="send"),
+    path('getMessages/<str:room>/', views.getMessages, name="getMessages")
 ]
