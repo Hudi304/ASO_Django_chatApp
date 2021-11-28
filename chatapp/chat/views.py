@@ -9,31 +9,14 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
+from django.db.models import Q
+
+from django.contrib.auth.models import User
+
 from django.contrib.auth.decorators import login_required
 
 import logging
 logger = logging.getLogger("STUPED")
-
-
-def index(request):
-    return render(request, 'chat/index.html')
-
-# def registerPage(request):
-#     if request.user.is_authenticated:
-#         return redirect('home')
-#     else:
-#         form = CreateUserForm
-#         context = {'form':  form}
-
-#         if request.method == 'POST':
-#             form = UserCreationForm(request.POST)
-#             if form.is_valid():
-#                 form.save()
-#                 user = form.cleaned_data.get('username')
-#                 messages.success(request, "Account wa create for " + user)
-#                 return redirect('login')
-
-#         return render(request, 'accounts/register.html', context)
 
 
 def registerPage(request):
@@ -49,6 +32,141 @@ def registerPage(request):
             return redirect('login')
 
     return render(request, 'accounts/register.html', context)
+
+
+def loginPage(request):
+    form = CreateUserForm
+    context = {'form':  form}
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request,  username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Username or Password incorrect')
+
+    return render(request, 'accounts/login.html', context)
+
+
+@login_required(login_url='login')
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
+
+
+@login_required(login_url='login')
+def home(request):
+
+    # users = ChatUser.objects.all()
+    context = {}
+
+    # logging.error("users", users)
+
+    return render(request, 'home.html', context)
+
+
+@login_required(login_url='login')
+def room(request, room):
+    username = request.GET.get('username')
+    room_details = Room.objects.get(name=room)
+    return render(request, 'room.html', {
+        'username': username,
+        'room': room,
+        'room_details': room_details,
+    })
+
+
+@login_required(login_url='login')
+def checkview(request):
+    room = request.POST['room_name']
+    username = request.POST['username']
+
+    if Room.objects.filter(name=room).exists():
+        # return redirect('/'+room+'/?username='+username)
+        return redirect('room/'+room)
+
+    else:
+        new_room = Room.objects.create(name=room)
+        new_room.save()
+        # return redirect('/'+room+'/?username='+username)
+        return redirect('room/' + room)
+
+
+@login_required(login_url='login')
+def send(request):
+    message = request.POST['message']
+    # username = request.POST['username']
+    username = request.user
+
+    room_id = request.POST['room_id']
+
+    new_message = Message.objects.create(
+        value=message, user=username, room=room_id)
+    new_message.save()
+    return HttpResponse()
+
+
+@login_required(login_url='login')
+def typing(request):
+    message = request.POST['message']
+    username = request.POST['username']
+    room_id = request.POST['room_id']
+
+    new_message = Message.objects.create(
+        value=message, user=username, room=room_id)
+    new_message.save()
+    return HttpResponse()
+
+
+@login_required(login_url='login')
+def getMessages(request,  room):
+    room_details = Room.objects.get(name=room)
+    messages = Message.objects.filter(room=room_details.id)
+    return JsonResponse({"messages": list(messages.values())})
+
+
+@login_required(login_url='login')
+def userForPm(request):
+    return render(request, 'privateMessage/userForPm.html')
+
+
+@login_required(login_url='login')
+def goToPrivateMessages(request):
+    toUser = request.POST['user_name']
+    try:
+        checkUser = User.objects.get(username=toUser)
+        return render(request, 'privateMessage/pmRoom.html', {
+            'user_name': toUser
+        })
+    except User.DoesNotExist:
+        return HttpResponse("User does not exist!")
+
+
+@login_required(login_url='login')
+def getPrivateMessages(request):
+    # user_name = request.POST['user_name']
+    user_name = request.user
+
+    messages = Message.objects.filter(Q(Q(toUser=user_name) & Q(
+        user=request.user.username)) | Q(Q(toUser=request.user.username) & Q(user=user_name)))
+    return JsonResponse({'messages': list(messages.values())})
+
+
+@login_required(login_url='login')
+def sendPm(request):
+    message = request.POST['message']
+    username = request.user.username
+    user_name = request.POST['user_name']
+    new_message = Message.objects.create(
+        value=message, user=username, toUser=user_name
+    )
+    new_message.save()
+    return HttpResponse("Message sent successfully!")
 
 
 # def registerPage(request):
@@ -123,85 +241,22 @@ def registerPage(request):
 #     return render(request, 'accounts/login.html', context)
 
 
-def loginPage(request):
-    form = CreateUserForm
-    context = {'form':  form}
+# def index(request):
+#     return render(request, 'chat/index.html')
 
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+# def registerPage(request):
+#     if request.user.is_authenticated:
+#         return redirect('home')
+#     else:
+#         form = CreateUserForm
+#         context = {'form':  form}
 
-        user = authenticate(request,  username=username, password=password)
+#         if request.method == 'POST':
+#             form = UserCreationForm(request.POST)
+#             if form.is_valid():
+#                 form.save()
+#                 user = form.cleaned_data.get('username')
+#                 messages.success(request, "Account wa create for " + user)
+#                 return redirect('login')
 
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.info(request, 'Username or Password incorrect')
-
-    return render(request, 'accounts/login.html', context)
-
-
-def logoutUser(request):
-    logout(request)
-    return redirect('login')
-
-
-def home(request):
-
-    # users = ChatUser.objects.all()
-    context = {}
-
-    # logging.error("users", users)
-
-    return render(request, 'home.html', context)
-
-
-def room(request, room):
-    username = request.GET.get('username')
-    room_details = Room.objects.get(name=room)
-    return render(request, 'room.html', {
-        'username': username,
-        'room': room,
-        'room_details': room_details,
-    })
-
-
-def checkview(request):
-    room = request.POST['room_name']
-    username = request.POST['username']
-
-    if Room.objects.filter(name=room).exists():
-        return redirect('/'+room+'/?username='+username)
-    else:
-        new_room = Room.objects.create(name=room)
-        new_room.save()
-        return redirect('/'+room+'/?username='+username)
-
-
-def send(request):
-    message = request.POST['message']
-    username = request.POST['username']
-    room_id = request.POST['room_id']
-
-    new_message = Message.objects.create(
-        value=message, user=username, room=room_id)
-    new_message.save()
-    return HttpResponse()
-
-
-def typing(request):
-    message = request.POST['message']
-    username = request.POST['username']
-    room_id = request.POST['room_id']
-
-    new_message = Message.objects.create(
-        value=message, user=username, room=room_id)
-    new_message.save()
-    return HttpResponse()
-
-
-def getMessages(request,  room):
-    room_details = Room.objects.get(name=room)
-    messages = Message.objects.filter(room=room_details.id)
-    return JsonResponse({"messages": list(messages.values())})
+#         return render(request, 'accounts/register.html', context)

@@ -22,13 +22,13 @@
         margin: 0;
         padding: 0;
         height: 100%;
-        background: #7abecc !important;
+        background: #6b6b6b !important;
       }
       .user_card {
         width: 350px;
         margin-top: auto;
         margin-bottom: auto;
-        background: #74cfbf;
+        background: #2416e7;
         position: relative;
         display: flex;
         justify-content: center;
@@ -59,6 +59,12 @@
         box-shadow: none !important;
         outline: 0px !important;
       }
+
+      .login_btn:hover {
+        background-color: gold;
+        color: black;
+        transition: ease-in-out 1s;
+      }
       .login_container {
         padding: 0 2rem;
       }
@@ -72,6 +78,14 @@
       .input_pass:focus {
         box-shadow: none !important;
         outline: 0px !important;
+      }
+
+      .have-account {
+        color: white;
+      }
+
+      .login-ref {
+        color: white;
       }
     </style>
   </head>
@@ -129,9 +143,9 @@
           </div>
 
           <div class="mt-4">
-            <div class="d-flex justify-content-center links">
+            <div class="d-flex justify-content-center links have-account">
               Already have an account?
-              <a href="{% url 'login' %}" class="ml-2">Login</a>
+              <a href="{% url 'login' %}" class="ml-2 login-ref">Login</a>
             </div>
           </div>
         </div>

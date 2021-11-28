@@ -25,10 +25,18 @@ class Room(models.Model):
     name = models.CharField(max_length=1000)
 
 
+# class Message(models.Model):
+#     value = models.CharField(max_length=10000000)
+#     date = models.DateTimeField(default=datetime.now, blank=True)
+#     room = models.CharField(max_length=1000000)
+#     user = models.CharField(max_length=1000000)
+#     # tyr maging a message that is send on every button press that tells everyone in the room that the other user is typing
+#     # userTyping = models.CharField(max_length=1000)
+
+
 class Message(models.Model):
-    value = models.CharField(max_length=10000000)
+    value = models.CharField(max_length=10000)
     date = models.DateTimeField(default=datetime.now, blank=True)
-    room = models.CharField(max_length=1000000)
-    user = models.CharField(max_length=1000000)
-    # tyr maging a message that is send on every button press that tells everyone in the room that the other user is typing
-    # userTyping = models.CharField(max_length=1000)
+    room = models.CharField(max_length=1000, blank=True)
+    user = models.CharField(max_length=100000)
+    toUser = models.CharField(max_length=100000, blank=True)

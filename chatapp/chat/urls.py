@@ -1,3 +1,4 @@
+from typing import MutableSet
 from django.conf.urls import include
 from django.urls import path
 from . import views
@@ -11,17 +12,29 @@ from . import views
 # *  GOOD
 urlpatterns = [
     # OK so rdirects in django use the name defined in path or the relative path from root
-    path('register/', views.registerPage, name='register'),
+
+    # path('home/', views.home, name='home'),
+
+    # path('', views.index, name='index'),
+    # path('chat/', include('chatTemp.urls')),
+    path('', views.home, name="home"),
+
     path('login/', views.loginPage, name='login'),
     path('logout/', views.logoutUser, name='logout'),
-    path('home/', views.home, name='home'),
 
-    path('', views.index, name='index'),
-    # path('chat/', include('chatTemp.urls')),
-    # path('', views.home, name="home"),
-    
+
+    path('userForPm', views.userForPm, name='userForPm'),
+    path('register/', views.registerPage, name='register'),
     path('<str:room>/', views.room, name="room"),
-    path('home/checkview', views.checkview, name="checkview"),
+
+
+    path('goToPrivateMessages', views.goToPrivateMessages,
+         name='goToPrivateMessages'),
+    path('checkview', views.checkview, name="checkview"),
     path('send', views.send, name="send"),
-    path('getMessages/<str:room>/', views.getMessages, name="getMessages")
+    path('sendPm', views.sendPm, name='sendPm'),
+    path('getMessages/<str:room>/', views.getMessages, name="getMessages"),
+    path('privateMessages', views.getPrivateMessages, name='getPrivateMessages'),
+
+
 ]
