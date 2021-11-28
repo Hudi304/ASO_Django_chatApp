@@ -131,8 +131,8 @@ def getMessages(request,  room):
 
 
 @login_required(login_url='login')
-def userForPm(request):
-    return render(request, 'privateMessage/userForPm.html')
+def selectUserForm(request):
+    return render(request, 'privateMessage/selectUserForm.html')
 
 
 @login_required(login_url='login')
@@ -140,11 +140,11 @@ def goToPrivateMessages(request):
     toUser = request.POST['user_name']
     try:
         checkUser = User.objects.get(username=toUser)
-        return render(request, 'privateMessage/pmRoom.html', {
+        return render(request, 'privateMessage/privateRoom.html', {
             'user_name': toUser
         })
     except User.DoesNotExist:
-        return HttpResponse("User does not exist!")
+        return HttpResponseNotFound("<body><style> .body{  width: 100vw;height: 100vh; dispaly: flex;justify-content: center; align-items: center; }</style><p>User does not exist!</p></body>")
 
 
 @login_required(login_url='login')

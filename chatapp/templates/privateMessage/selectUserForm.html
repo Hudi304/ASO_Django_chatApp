@@ -19,10 +19,13 @@
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <title>Capriware</title>
+    <title>ASO Chat APP</title>
     <style>
       body {
         background-color: #dbdbdb;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
       }
 
       #input1 {
@@ -68,11 +71,6 @@
         font-size: 30px;
         padding-left: 20px;
       }
-      body {
-        margin: 0 auto;
-        max-width: 800px;
-        padding: 0 20px;
-      }
 
       .container {
         border: 2px solid #dedede;
@@ -105,14 +103,54 @@
         color: white;
         border-radius: 2px;
       }
+
+      .private-msg-lbl {
+      }
+
+      .private-msg-lbl:hover {
+        transition: ease 1s;
+
+        color: black;
+      }
+
+      .private-msg-btn {
+        width: 200px;
+        background-color: gold;
+        border-radius: 5px;
+        transition: ease 1s;
+        padding: 5px;
+        border: 1px solid black;
+      }
+      .private-msg-btn:hover {
+        width: 200px;
+        background-color: white;
+        border-radius: 5px;
+      }
+
+      .toolbar {
+        background-color: #120061;
+        color: white;
+        height: 4vh;
+        width: 100vw;
+      }
+
+      .log-out {
+        color: white;
+      }
     </style>
   </head>
   <body>
+    <div class="toolbar">
+      <a href="{% url 'logout' %}">LogOut</a>
+    </div>
     <div class="container">
-      <span><a href="{% url 'home' %}">Send room message</a></span>
+      <span class="private-msg-btn"
+        ><a class="private-msg-lbl" href="{% url 'home' %}"
+          >Send room message</a
+        ></span
+      >
 
       <div>Hello, {{request.user}}</div>
-      <span><a href="{% url 'logout' %}">LogOut</a></span>
       <form id="post-form" method="POST" action="goToPrivateMessages">
         {% csrf_token %}
         <label id="username_top">User Name</label>

@@ -23,7 +23,7 @@ urlpatterns = [
     path('logout/', views.logoutUser, name='logout'),
 
 
-    path('userForPm', views.userForPm, name='userForPm'),
+    path('selectUserForm', views.selectUserForm, name='selectUserForm'),
     path('register/', views.registerPage, name='register'),
     path('<str:room>/', views.room, name="room"),
 

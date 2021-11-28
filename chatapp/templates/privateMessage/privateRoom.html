@@ -11,9 +11,9 @@
     />
     <style>
       body {
-        margin: 0 auto;
-        max-width: 800px;
-        padding: 0 10px;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
       }
 
       .container {
@@ -54,9 +54,13 @@
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
       crossorigin="anonymous"
     ></script>
+    <title>Private Room</title>
   </head>
 
   <body>
+    <div class="toolbar">
+      <a href="{% url 'logout' %}">LogOut</a>
+    </div>
     <h2 style="padding: 20px">{{user_name}}</h2>
 
     <div id="display"></div>
@@ -131,8 +135,20 @@
           border-radius: 35px;
           height: 10px;
         }
+
+        .toolbar {
+          background-color: #120061;
+          color: white;
+          height: 4vh;
+          width: 100vw;
+        }
+
+        .log-out {
+          color: white;
+        }
       </style>
       <br />
+
       <div id="form-div">
         <form id="post-form">
           {% csrf_token %}
